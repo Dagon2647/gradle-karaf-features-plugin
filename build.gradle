@@ -26,6 +26,8 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.9.1'
     id 'com.bmuschko.nexus' version '2.3.1'
     id 'net.researchgate.release' version '2.3.4'
+    id "com.jfrog.bintray" version "1.5"
+
 }
 
 apply plugin: 'io.codearte.nexus-staging'
@@ -166,3 +168,6 @@ task promote(dependsOn: closeAndPromoteRepository) {
 task wrapper(type: Wrapper) {
     gradleVersion = project.gradleVersion
 }
+
+
+apply from: 'bintray-publish.gradle'

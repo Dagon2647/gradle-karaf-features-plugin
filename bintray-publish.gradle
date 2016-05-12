@@ -1,12 +1,4 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
-    }
-}
-apply plugin: 'com.jfrog.bintray'
+
 
 
 ext{
@@ -20,6 +12,7 @@ ext{
 bintray {
     user = bintrayUser
     key = bintrayApiKey
+    configurations = ['archives']
     pkg {
         repo = 'maven'
         name = 'gradle-project'
@@ -27,3 +20,5 @@ bintray {
         vcsUrl = 'https://github.com/Dagon2647/gradle-karaf-features-plugin'
     }
 }
+
+bintrayUpload.dependsOn configurations.archives
