@@ -18,6 +18,7 @@
 package com.github.lburgazzoli.gradle.plugin.karaf.features.tasks
 
 import com.github.lburgazzoli.gradle.plugin.karaf.features.BundleStrategy
+import com.github.lburgazzoli.gradle.plugin.karaf.features.KarafFeaturesPlugin
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
@@ -90,7 +91,7 @@ class KarafFeaturesTaskExtension {
     }
 
     boolean isPreferMvnBundles() {
-        return bundleStrategy == BundleStrategy.NVN
+        return bundleStrategy == BundleStrategy.MVN
     }
 
     void setPreferMvnBundles(boolean preferMvnBundles) {
@@ -112,7 +113,7 @@ class KarafFeaturesTaskExtension {
 
     File getOutputFile() {
         if(outputFile == null) {
-            def path = "${project.buildDir}/karafFeautures"
+            def path = "${project.buildDir}/${KarafFeaturesPlugin.EXTENSION_NAME}"
             def name = "${name}-${project.version}.xml"
 
             return new File(path, name)

@@ -21,6 +21,18 @@ import com.github.lburgazzoli.gradle.plugin.karaf.features.tasks.KarafKarTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.component.Artifact
+import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
+import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
+import org.gradle.api.internal.plugins.DefaultArtifactPublicationSet
+import org.gradle.api.internal.plugins.DslObject
+import org.gradle.api.plugins.BasePlugin
+import org.gradle.api.plugins.JavaPlugin
+import org.gradle.api.plugins.MavenPlugin
+import org.gradle.api.plugins.MavenRepositoryHandlerConvention
+import org.gradle.api.tasks.Upload
 
 /**
  * Plugin for integrating Karaf features generation into a build.  Execution is configured
@@ -34,16 +46,26 @@ class KarafFeaturesPlugin implements Plugin<Project> {
     public static final String CONFIGURATION_NAME = 'karafFeaturesBundles'
     public static final String EXTENSION_NAME = 'karafFeatures'
 
+
     @Override
     void apply(Project project) {
-        def configuration = project.configurations.maybeCreate( CONFIGURATION_NAME )
-        def extension = project.extensions.create( EXTENSION_NAME, KarafFeaturesTaskExtension, project )
+        project.plugins.apply(BasePlugin)
 
-        def featuresTask = project.task( KarafFeaturesTask.TASK_NAME, type: KarafFeaturesTask )
-        def karTask = project.task( KarafKarTask.TASK_NAME, type: KarafKarTask )
 
-        afterEvaluate(project, featuresTask, extension)
-        afterEvaluate(project, karTask, extension)
+        def configuration = project.configurations.maybeCreate(CONFIGURATION_NAME)
+        def extension = project.extensions.create(EXTENSION_NAME, KarafFeaturesTaskExtension, project)
+
+        def featuresTask = project.task(KarafFeaturesTask.TASK_NAME, type: KarafFeaturesTask)
+        def karTask = project.task(KarafKarTask.TASK_NAME, type: KarafKarTask)
+
+
+
+        project.afterEvaluate {
+            afterEvaluate(project, featuresTask, extension)
+            afterEvaluate(project, karTask, extension)
+            configureArtifacts(project, featuresTask, extension);
+        }
+
     }
 
     private afterEvaluate(Project project, Task task, KarafFeaturesTaskExtension extension) {
@@ -54,16 +76,49 @@ class KarafFeaturesPlugin implements Plugin<Project> {
             }
 
             feature.projectDescriptors.each { descriptor ->
-                // we need access the jar for any project we generate feature for
-                task.dependsOn descriptor.project.tasks.jar
-                // we also want our descriptor.project to be based on the runtime configuration
-                task.inputs.files(descriptor.project.configurations.runtime)
+
+                descriptor.project.plugins.withType(JavaPlugin) {
+
+                    // we need access the jar for any project we generate feature for
+                    task.dependsOn descriptor.project.configurations.runtime.buildDependencies
+                    // we also want our descriptor.project to be based on the runtime configuration
+                    task.inputs.files(descriptor.project.configurations.runtime)
+                }
+
+
             }
         }
 
         // if there is an output file, add that as an output
         if (extension.outputFile != null) {
             task.outputs.file(extension.outputFile)
+        }
+    }
+
+    private configureArtifacts(Project project, KarafFeaturesTask task, KarafFeaturesTaskExtension extension) {
+
+        Configuration configuration = project.configurations.findByName(Dependency.ARCHIVES_CONFIGURATION);
+
+        DefaultPublishArtifact featuresArtifact = new DefaultPublishArtifact(project.name, 'xml', 'xml', 'features', null, extension.outputFile, task);
+        //Add default artifact candidate
+        project.getExtensions().getByType(DefaultArtifactPublicationSet.class).addCandidate(featuresArtifact);
+
+        configuration.getArtifacts().add(featuresArtifact);
+
+
+        project.plugins.withType(MavenPlugin) {
+            //Add default install task if it's not added
+            Upload upload = project.tasks.withType(Upload).findByName(MavenPlugin.INSTALL_TASK_NAME);
+            if (upload != null) {
+                return;
+            }
+            upload = project.tasks.create(MavenPlugin.INSTALL_TASK_NAME, Upload);
+
+            //Same behavior as with maven plugin for jar/war
+            upload.setConfiguration(configuration);
+            MavenRepositoryHandlerConvention repositories = new DslObject(upload.getRepositories()).getConvention().getPlugin(MavenRepositoryHandlerConvention.class);
+            repositories.mavenInstaller();
+            upload.setDescription("Installs the 'archives' artifacts into the local Maven repository.");
         }
     }
 }
