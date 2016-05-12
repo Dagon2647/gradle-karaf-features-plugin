@@ -80,7 +80,7 @@ class KarafFeaturesPlugin implements Plugin<Project> {
                 descriptor.project.plugins.withType(JavaPlugin) {
 
                     // we need access the jar for any project we generate feature for
-                    task.dependsOn descriptor.project.configurations.runtime.buildDependencies
+                    task.dependsOn descriptor.project.tasks.jar
                     // we also want our descriptor.project to be based on the runtime configuration
                     task.inputs.files(descriptor.project.configurations.runtime)
                 }
