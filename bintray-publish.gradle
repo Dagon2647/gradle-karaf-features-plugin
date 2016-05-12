@@ -15,7 +15,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = 'maven'
-        name = 'gradle-project'
+        name =  project.name
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/Dagon2647/gradle-karaf-features-plugin'
     }
