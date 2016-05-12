@@ -3,20 +3,12 @@ language: java
 addons:
   apt:
     packages:
-      - oracle-java8-installer
-script: "
-  if [ ${TRAVIS_PULL_REQUEST} = 'false' ]; 
-  then
-    echo \"== MAIN build ==\";
-    ./gradlew test uploadArchives;
-  else
-    echo \"== PULL build ==\";
-    ./gradlew test;
-  fi
-"
+    - oracle-java8-installer
+script: ' if [ ${TRAVIS_PULL_REQUEST} = ''false'' ]; then echo "== MAIN build ==";
+  ./gradlew test bintrayUpload; else echo "== PULL build =="; ./gradlew test; fi '
 jdk:
 - oraclejdk8
 env:
   global:
-  - secure: H5D+dQ4BH263Zbw56vZU1j6gZgzPaL5DvQKuPUj9dPFJZGkSflCyLCcOJKMoXwp9m8xUQJ1+5cIhCa06IwiV54dleZC0tcI72mfTQ9ZTiRixEGAwgcfgnAoQunVRHL+bkqUeUB+kK5Gcf9YDWUpSdGJYiuVO2zJqMifnFxbnF5w=
-  - secure: eMPyAUFD6IlEwAdU1KM3OQt8klQI8wR2bijK8whQfoNF5CyjkoDVi/YEo5GtNzmcGujkREhN0IzIHCmJDUYWzzU/71sakibpo1iajQsKm+gBtHb5TYXRmHGPJeXQv8AT2YL+q6Z97UU0m0VnoOU7I/oJxOoiJ9d5XYPV40IpjaM=
+  - secure: k7tJFH+ohK1/KEQt6PCYsD3Af3DPf+2HSy3vC/eEZ6uchMYTzjWlVP9QRf6WsHHSXLXYKOVUJx5swEyd45BXEZ2p/vb78Bf4hncFRrAqkmkKLsAIlhZ75Cd2e/U2o3tjod/XK5tZ5BWUqOyKwIhxR3UGXMhr9ExEMIFFz4f1chvVVAU63UBp1pGkybA/2JGwnRsG6Fm9wfJPCDb0ycP+Rpo5qIIvm5fSB/gWPPkXWg+Q/dGx7IVc/RXRnJCLlk1YcAA49zLJ+Y+/cMpzRfTuzrBERxqfEE09f8SyCCrDkoBq5WY09nQalLJJ07asdWhaFSyLs1mxnb/FGNZOLm/S1n0PnijqjRsFvw32k1cKHTLaXIRvC2osRFDHf/qwv4UWMnxqSjYrXxZ/0RMTJH9k8sPU9KvLnRxMl6LRy3bDtdJJPRF8lU/8QPim/FrO1tBqG7xYEu2gaD2NMnsKBgonX64phuRglIMbbHDOjDHqzbdOAB/cXt6PDJjXpOZIYCkvmWE7yvXxfQKyj9dHNJ846u4sPuO1tEugxi3Ctd878vwbHDtUEcvu24JdrZNigLtz5SMLz6gz4QV+h75n2VG9Fe7V4EeLaFfmKfBTBGxLnsFiO0ugGRK0wAexTfyrMpqE3uEtACsYAfhoHn4uexql0jXp+FAGaNsR2d/b3tZ4teI=
+  - secure: Tk6EerIG97azuLbimmayMPSVilwQUpdTU2Olar9Lbv1h4nzWBoefDCnq0AlDSPx/O7IcNJlBGOad5NuZFBuCsbGF55FaM4HI0Fec+q8LA7bB4+dibEdnXL7W9BIPAp4ry9sX7GRe57J9mShWrO6AK759XHeegY8kXOfWptfgg41IKSRd09YBdPrTHf7YZlurm/pt42MQRcDR2r5Tm79imaKXWgWD544GpfhilxFONmW1PK3xJiZr/vg1FCUnq1bgt3Iu9t+3wiXj5lj/Ny92KEKqCSewDtyeTeYVzFFn/ahYrLb+y4JHobhmAdkFXLCZYdU9qTEOjoh3lZvVBdocp82aWYrur45gXKJSUUNhMWax7MA/u61+umLoTBy6FGBwM2t7b0+fhe8ii3ifgwyCWGBW9Z0ciVoPilpXvOU5Y8ofCBBT4VN4zXkB1QKM76flQ6XrbJYX4ShhnWAolTGc+t6bG13MD54seztKnvBCMO60oAN/BYaO55WiyP0+NZMkVPfOvzyPcqznVUbiyzW459BV7xhHpnl8sK8Q7ZFDfvhj7sud/T8rESR/7y4gg0zt4g7Xk9mYP1jSZQxtJtaDYW2zoTNklIt9rAQ0b7qBlb7U/orSX45tpbjoBaurui+pguYxRJFmpRylEiKkwhAhJ6oMAtjS2Vly9lvfhOa5kig=

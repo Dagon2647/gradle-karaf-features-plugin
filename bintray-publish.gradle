@@ -1,0 +1,29 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+    }
+}
+apply plugin: 'com.jfrog.bintray'
+
+
+ext{
+    if(!project.hasProperty('bintrayUser') && !project.hasProperty('bintrayApiKey')) {
+        bintrayUser = "$System.env.BINTRAY_USER"
+        bintrayApiKey = "$System.env.BINTRAY_API_KEY"
+    }
+}
+
+
+bintray {
+    user = bintrayUser
+    key = bintrayApiKey
+    pkg {
+        repo = 'maven'
+        name = 'gradle-project'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/Dagon2647/gradle-karaf-features-plugin'
+    }
+}
